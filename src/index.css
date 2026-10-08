@@ -5063,3 +5063,67 @@ button { color: inherit; }
 
 :root[data-theme="night"] .composer-board.is-preview > .treemap-canvas { outline-color: #f2efe6; }
 :root[data-theme="night"] .composer-board .preview-flag { background: #f2efe6; color: #202733; }
+
+/* ------------------------------------------------------------------ *
+ * FINISHED SCREEN FIX: the live composition needs the SVG's INNER WHITE
+ * CARD geometry so it sits BELOW the header band and is contained (not
+ * full-bleed overlapping the stats). SVG 15: cream board origin 191,50;
+ * inner white rect 209.5,188 860.97x507 -> relative left 18.5 top 138.
+ * Appended last to win over the exact-frame block.
+ * ------------------------------------------------------------------ */
+@media (min-width: 900px) and (min-height: 700px) {
+  .finished-screen .print-postcard .postcard-rotator {
+    position: absolute;
+    z-index: 1;
+    top: 138px;             /* below the 138px header band (188 - 50) */
+    left: 18.5px;           /* 209.5 - 191 */
+    width: 860.97px;
+    height: 507px;
+    margin: 0;
+    border-radius: 15px;
+    background: #fff;
+    overflow: hidden;
+  }
+  .finished-screen .print-postcard .postcard-rotator > .treemap-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    border: 0;
+    border-radius: 15px;
+    background: transparent;
+    box-shadow: none;
+  }
+  /* Footer (signature + ART-TRACE) sits below the white card, inside the board. */
+  .finished-screen .print-postcard > footer {
+    position: absolute;
+    z-index: 2;
+    left: 18.5px;
+    right: 18.5px;
+    bottom: 10px;
+    min-height: 0;
+    padding: 0 6px;
+  }
+  .app-root[data-theme="night"] .finished-screen .print-postcard .postcard-rotator { background: #252c36; }
+}
+
+/* ------------------------------------------------------------------ *
+ * SIGN SCREEN button fix (short / non-exact-frame viewports): the round
+ * BACK/NEXT nav was overlapping the SHOW PREVIEW pill at the card's
+ * bottom-center. Pin BACK/NEXT to the screen's bottom corners below the
+ * desktop breakpoint so they never collide with the pill.
+ * ------------------------------------------------------------------ */
+@media (max-width: 899px), (max-height: 699px) {
+  .sign-screen { position: relative; padding-bottom: 96px; }
+  .sign-screen .sign-back,
+  .sign-screen .sign-next {
+    position: fixed;
+    bottom: max(18px, env(safe-area-inset-bottom));
+    z-index: 30;
+  }
+  .sign-screen .sign-back { left: 16px; }
+  .sign-screen .sign-next { right: 16px; left: auto; }
+  /* Keep the SHOW PREVIEW pill clear of the pinned nav. */
+  .sign-screen .sign-card { margin-bottom: 24px !important; }
+}
