@@ -3317,17 +3317,28 @@ button { color: inherit; }
     justify-content: center;
   }
   .sign-screen .sign-card > label span { display: none; }
+  /* The name field is now a direct child (.sign-name-input, no label wrapper).
+     Center it over the inner white surface (top:12 left:15 715x433). */
+  .sign-screen .sign-card .sign-name-input,
   .sign-screen .sign-card input {
-    width: 600px;
-    padding: 0;
+    position: absolute;
+    top: 12px;
+    left: 15px;
+    width: 715px;
+    height: 433px;
+    margin: 0;
+    padding: 0 24px;
     border: 0;
     background: transparent;
     color: #2f2f2f;
-    font-family: "Figma Hand", "Figma Hand:Bold", cursive;
-    font-size: 36px;
+    font-family: "Figma Hand:Bold", "Figma Hand", "Caveat", cursive;
+    font-size: 44px;
+    font-weight: 700;
     letter-spacing: -1px;
     text-align: center;
+    outline: none;
   }
+  .sign-screen .sign-card .sign-name-input::placeholder,
   .sign-screen .sign-card input::placeholder { color: #9b9791; opacity: 1; }
 
   /* "SHOW PREVIEW" pill at 566.5,720.5 (149x44 r22). */
@@ -4784,16 +4795,23 @@ button { color: inherit; }
     top: 0;
     width: 149px !important;
   }
-  .composer-screen .composer-tools .tool-edit    { left: calc(50% - 250px); }  /* center 390 */
-  .composer-screen .composer-tools .tool-preview { left: calc(50% - 74.5px); } /* center 640 */
-  .composer-screen .composer-tools .tool-reset   { left: calc(50% + 175px); }  /* center 890 */
+  /* 149px pills positioned by LEFT EDGE = frame center − 74.5. */
+  .composer-screen .composer-tools .tool-edit    { left: calc(50% - 324.5px); } /* center 390 */
+  .composer-screen .composer-tools .tool-preview { left: calc(50% - 74.5px); }  /* center 640 */
+  .composer-screen .composer-tools .tool-reset   { left: calc(50% + 175.5px); } /* center 890 */
 }
 
 /* ------------------------------------------------------------------ *
  * "Personalize your Postcard..." sign screen: one large cream card,
  * the name typed as a big centered handwriting field, and a single
  * SHOW PREVIEW pill at the bottom. Appended last to win.
+ * NOTE: scoped to SMALL screens only. On desktop (min 900x700) the
+ * pixel-faithful exact-frame sign layout above owns the card — this
+ * generic flex layout must NOT override it (it was mispositioning the
+ * card to the right). So the whole block lives in a max-width/height
+ * media query.
  * ------------------------------------------------------------------ */
+@media (max-width: 899px), (max-height: 699px) {
 .sign-screen .sign-card {
   position: relative;
   display: flex !important;
@@ -4868,6 +4886,7 @@ button { color: inherit; }
   background: transparent !important;
   color: #f2efe6 !important;
 }
+} /* end small-screen sign-card overrides */
 
 /* ================================================================== *
  * FINISHED SCREEN + HEADER MENU — authoritative tail block.
@@ -5000,3 +5019,47 @@ button { color: inherit; }
 }
 /* Night theme: icons inherit the per-item color via inline style +
    currentColor, so they stay on-brand on the dark menu (#202733). */
+
+/* ------------------------------------------------------------------ *
+ * Composer EDIT / SHOW PREVIEW visible states. SHOW PREVIEW now makes
+ * a clear read-only difference: a framed board + PREVIEW badge, with
+ * the rails/other tools dimmed. EDIT shows a dashed editable outline.
+ * ------------------------------------------------------------------ */
+.composer-board { position: relative; }
+
+/* SHOW PREVIEW: clean framed read-only look + badge. */
+.composer-board.is-preview > .treemap-canvas {
+  outline: 3px solid #2F2F2F;
+  outline-offset: 6px;
+  box-shadow: 0 24px 60px rgba(42, 41, 35, .22);
+}
+.composer-board .preview-flag {
+  position: absolute;
+  z-index: 12;
+  top: 10px;
+  right: 10px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: #2F2F2F;
+  color: #fff;
+  font-family: "Rounded Mplus 1c Bold", "Rounded Mplus 1c", Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .14em;
+}
+/* While previewing, dim the editing chrome (rails + the non-active tools)
+   so focus is on the finished-looking board. */
+.composer-stage:has(.composer-board.is-preview) .composer-rail {
+  opacity: .4;
+  pointer-events: none;
+  transition: opacity .2s ease;
+}
+
+/* EDIT: dashed outline signals the board is now draggable/resizable. */
+.composer-board.is-editing > .treemap-canvas {
+  outline: 2px dashed #8E3557;
+  outline-offset: 4px;
+}
+
+:root[data-theme="night"] .composer-board.is-preview > .treemap-canvas { outline-color: #f2efe6; }
+:root[data-theme="night"] .composer-board .preview-flag { background: #f2efe6; color: #202733; }

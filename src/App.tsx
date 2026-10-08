@@ -1561,16 +1561,17 @@ function FinalScreen({
             >BRING FORWARD</Button>
           </aside>
 
-          <div className="composer-board">
+          <div className={`composer-board ${showPreview ? "is-preview" : ""} ${composerEditable ? "is-editing" : ""}`}>
             <PostcardComposition
               elements={elements}
               results={results}
               image={image}
-              selected={selected}
+              selected={showPreview ? undefined : selected}
               editable={composerEditable && !showPreview}
               onSelect={setSelected}
               onChange={updateElement}
             />
+            {showPreview && <span className="preview-flag" aria-hidden="true">PREVIEW</span>}
           </div>
 
           <aside className="composer-rail rail-right">
